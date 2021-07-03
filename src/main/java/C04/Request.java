@@ -1,9 +1,7 @@
 package C04;
 
 import javax.servlet.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
@@ -15,6 +13,46 @@ import java.util.Map;
  * @date 2021/7/2 16:43
  */
 public class Request implements ServletRequest {
+
+    private InputStream in;
+    private String uri;
+
+    public Request(InputStream in) throws IOException {
+        this.in = in;
+        parse();
+    }
+
+    public void parse() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line = reader.readLine();
+        this.uri = parseUri(line);
+    }
+
+    private String parseUri(String line) {
+        if (line == null) return null;
+        int index1, index2;
+        index1 = line.indexOf(' ');
+        if (index1 != -1) {
+            index2 = line.indexOf(' ', index1 + 1);
+            if (index2 > index1) {
+                return line.substring(index1 + 1, index2);
+            }
+        }
+        return null;
+    }
+
+    public boolean isServletRequest() {
+        if (uri.startsWith("/servlet/")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
     public Object getAttribute(String s) {
         return null;
     }
